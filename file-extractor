@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# This will let you strip all the paths from a tar archive and extract the files to any arbitrary directory.
+# Becase it uses a file redirection it looses timestamps, ownership, and permissions.
+# It works with files and/or directories that have spaces in the names.
+
+# $1 = tar file
+# $2 = output directory (if unset it defaults to ./)
+
+# $1 = tar file
+# $2 = output directory
+file-extractor() {
+    tar -atf "${1}" | awk -F/ '{if ($NF) print $NF}' | while read file; do
+        tar --no-anchored -O -axf "${1}" "${file}" > "${2:-./}"/"${file}";
+    done
+}
+
+file-extractor "${1}" "${2}";
+
+# Example:
+# nbritton@lab01:~/build/perccli$ ./file-extractor perccli_linux_NF8G9_A07_7.529.00.tar.gz ./build
+# nbritton@lab01:~/build/perccli$ ll ./build/
+# total 18800
+# drwx------ 2 nbritton nbritton       91 Sep 28 19:09 ./
+# drwxrwxr-x 3 nbritton nbritton      271 Sep 28 19:09 ../
+# -rw-rw-r-- 1 nbritton nbritton     1809 Sep 28 19:09 license.txt
+# -rw-rw-r-- 1 nbritton nbritton  5442712 Sep 28 19:09 perccli-007.0529.0000.0000-1.noarch.rpm
+# -rw-rw-r-- 1 nbritton nbritton 13800928 Sep 28 19:09 perccli.efi
