@@ -5,7 +5,7 @@
 # It works with files and/or directories that have spaces in the names.
 
 # $1 = tar file
-# $2 = output directory (if unset it defaults to ./)
+# $2 = output directory (if unset it defaults to .)
 
 file-extractor() {
     tar -atf "${1}" | awk -F/ '{if ($NF) print $NF}' | while read file; do
