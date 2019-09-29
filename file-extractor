@@ -9,7 +9,7 @@
 
 file-extractor() {
     tar -atf "${1}" | awk -F/ '{if ($NF) print $NF}' | while read file; do
-        tar --no-anchored -O -axf "${1}" "${file}" > "${2:-./}"/"${file}";
+        tar --no-anchored -O -axf "${1}" "${file}" > "${2:-.}"/"${file}";
     done
 }
 
