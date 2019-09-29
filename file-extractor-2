@@ -1,0 +1,47 @@
+#!/bin/bash
+
+# This will let you strip all the paths from a tar archive and extract the files to any arbitrary directory.
+
+# Function inputs:
+# --tar-file=, -tar-file=, --tf=, -tf=, tf=
+# --output-directory=, -output-directory=, --od=, -od=, od= (defaults to . if not provided)
+# Any additional args get passed as filenames to extract and/or extra args for tar.
+
+file-extractor() {
+
+    for arg do
+        shift
+        case "${arg}" in
+            (*-tar-file=*|*-tf=*|tf=*)
+                tf=${arg//*=/};
+            ;;
+            (*-output-directory=*|*-od=*|od=*)
+                od=${arg//*=/};
+            ;;
+            (*) set -- "$@" "$arg" ;;
+        esac
+    done
+
+    tar -atf ${tf} --no-anchored $@ | awk -F/ '{if ($NF) print $NF}' | while read file; do
+        tar -axf ${tf} --no-anchored "${file}" --transform="s#$(tar -atf ${tf} --no-anchored "${file}" | grep -o '^.*/')#${od:=.}/#"
+    done
+
+}
+
+file-extractor $@;
+
+# Example:
+# nbritton@lab01:~/perccli$ ./file-extractor-2 --tar-file=perccli_linux_NF8G9_A07_7.529.00.tar.gz --output-directory=./build perccli.efi
+# nbritton@lab01:~/perccli$ ll ./build/
+# total 13480
+# drwx------ 2 nbritton nbritton       25 Sep 29 01:32 ./
+# drwxrwxr-x 3 nbritton nbritton      297 Sep 29 01:31 ../
+# -rwxr-xr-x 1 nbritton nbritton 13800928 Sep 18  2018 perccli.efi*
+# nbritton@lab01:~/perccli$ ./file-extractor-2 --tar-file=perccli_linux_NF8G9_A07_7.529.00.tar.gz --output-directory=./build
+# nbritton@lab01:~/perccli$ ll ./build/
+# total 18800
+# drwx------ 2 nbritton nbritton       91 Sep 29 01:32 ./
+# drwxrwxr-x 3 nbritton nbritton      297 Sep 29 01:31 ../
+# -rwxr-xr-x 1 nbritton nbritton     1809 Feb 14  2013 license.txt*
+# -rwxr-xr-x 1 nbritton nbritton  5442712 Sep 17  2018 perccli-007.0529.0000.0000-1.noarch.rpm*
+# -rwxr-xr-x 1 nbritton nbritton 13800928 Sep 18  2018 perccli.efi*
