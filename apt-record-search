@@ -1,0 +1,54 @@
+# This lets you search for arbitrary information in the apt-cache policy database:
+
+apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /pattern1/ && /pattern2a|pattern2b/ && !/not-pattern/) {print}}';
+
+# Breaking it down:
+
+# Request all records in the database:
+# apt-cache policy \*
+
+# For each record, prepend a pound symbol ("#") to the start of each record:
+# sed '/^[[:graph:]]*:$/i #'
+
+# Use awk's RS (Record Seperator) feature to limit the regex matching scope on a per record basis:
+# awk '{RS="#";}
+
+# Use awk's if statement coupled with regex and conditional statements to match what you want, if match then print:
+# {if ($0 ~ /pattern1/ && /pattern2a|pattern2b/ && !/not-pattern/) {print}}';
+
+# The nice thing about this approch is it lets you search by repo, for example:
+# root@cmp2314:~# apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /openstack-queens/ && /ssl|tls/ && !/none/) {print}}' | sed 's/^/# /g'
+#
+# python-openssl:
+#   Installed: 17.5.0-1.0~u16.04+mcp
+#   Candidate: 17.5.0-1.0~u16.04+mcp
+#   Version table:
+#  *** 17.5.0-1.0~u16.04+mcp 1100
+#        1100 http://mirror.mirantis.com/2019.2.0//openstack-queens//xenial xenial/main amd64 Packages
+#        1100 http://mirror.mirantis.com/update/2019.2.4//openstack-queens//xenial xenial/main amd64 Packages
+#         100 /var/lib/dpkg/status
+#      0.15.1-2ubuntu0.2 500
+#         500 http://mirror.mirantis.com/2019.2.0//ubuntu xenial-updates/main amd64 Packages
+#         500 http://mirror.mirantis.com/2019.2.0//ubuntu xenial-security/main amd64 Packages
+#         500 http://mirror.mirantis.com/update/2019.2.4//ubuntu xenial-security/main amd64 Packages
+#         500 http://mirror.mirantis.com/hotfix/2019.2.0//ubuntu xenial-security/main amd64 Packages
+#      0.15.1-2build1 500
+#         500 http://mirror.mirantis.com/2019.2.0//ubuntu xenial/main amd64 Packages
+#
+#
+# python3-openssl:
+#   Installed: 17.5.0-1.0~u16.04+mcp
+#   Candidate: 17.5.0-1.0~u16.04+mcp
+#   Version table:
+#  *** 17.5.0-1.0~u16.04+mcp 1100
+#        1100 http://mirror.mirantis.com/2019.2.0//openstack-queens//xenial xenial/main amd64 Packages
+#        1100 http://mirror.mirantis.com/update/2019.2.4//openstack-queens//xenial xenial/main amd64 Packages
+#         100 /var/lib/dpkg/status
+#      0.15.1-2ubuntu0.2 500
+#         500 http://mirror.mirantis.com/2019.2.0//ubuntu xenial-updates/main amd64 Packages
+#         500 http://mirror.mirantis.com/2019.2.0//ubuntu xenial-security/main amd64 Packages
+#         500 http://mirror.mirantis.com/update/2019.2.4//ubuntu xenial-security/main amd64 Packages
+#         500 http://mirror.mirantis.com/hotfix/2019.2.0//ubuntu xenial-security/main amd64 Packages
+#      0.15.1-2build1 500
+#         500 http://mirror.mirantis.com/2019.2.0//ubuntu xenial/main amd64 Packages
+#
