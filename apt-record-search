@@ -17,7 +17,7 @@ apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /pat
 # {if ($0 ~ /pattern1/ && /pattern2a|pattern2b/ && !/not-pattern/) {print}}';
 
 # The nice thing about this approch is it lets you search by repo, for example:
-# root@cmp2314:~# apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /openstack-queens/ && /ssl|tls/ && !/none/) {print}}' | sed 's/^/# /g'
+# root@cmp2314:~# apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /openstack-queens/ && /ssl|tls/ && !/none/) {print}}';
 #
 # python-openssl:
 #   Installed: 17.5.0-1.0~u16.04+mcp
