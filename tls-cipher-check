@@ -15,3 +15,17 @@ portslist="$(ss -l4n | awk '{print $5}' | awk -F: '{print $2}' | sort -u)";
 for port in ${portslist}; do
     printf "Testing port ${port}: "; curl --max-time 2 -s -v https://${ipaddress}:${port}/ 2>&1 | grep "connection using"; echo;
 done | grep "*";
+
+# Example:
+# root@ctl01:~# curl -s https://raw.githubusercontent.com/nbritton/bash-cookbook/2722757d2216f1ce590bc4eb7640d09cb224e083/tls-cipher-check | bash
+# Testing port 24231: * SSL connection using TLS1.2 / ECDHE_RSA_AES_128_GCM_SHA256
+# Testing port 35357: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 5000: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 6080: * SSL connection using TLS1.2 / ECDHE_RSA_AES_128_GCM_SHA256
+# Testing port 8000: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 8004: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 8774: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 8776: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 8778: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 9292: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
+# Testing port 9696: * SSL connection using TLS1.2 / ECDHE_RSA_AES_256_CBC_SHA384
