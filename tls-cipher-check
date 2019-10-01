@@ -12,6 +12,6 @@ ipaddress="$(ip -4 address show ${nic} | awk '/brd/ && !/\/32/ sub("\\/[[:digit:
 portslist="$(ss -l4n | awk '{print $5}' | awk -F: '{print $2}' | sort -u)";
 
 # Query each listening port, and extract TLS cipher.
-echo ${portslist} | while read port; do
+for port in ${portslist}; do
     printf "Testing port ${port}: "; curl --max-time 2 -s -v https://${ipaddress}:${port}/ 2>&1 | grep "connection using"; echo;
 done | grep "*";
