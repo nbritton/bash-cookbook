@@ -16,7 +16,7 @@ apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /pat
 # Use awk's if statement coupled with regex and conditional statements to match what you want, if match then print:
 # {if ($0 ~ /pattern1/ && /pattern2a|pattern2b/ && !/not-pattern/) {print}}';
 
-# The nice thing about this approch is it lets you search by repo, for example:
+# The nice thing about this approach is it lets you search by repo, for example:
 # root@cmp2314:~# apt-cache policy \* | sed '/^[[:graph:]]*:$/i #' | awk '{RS="#";} {if ($0 ~ /openstack-queens/ && /ssl|tls/ && !/none/) {print}}';
 #
 # python-openssl:
