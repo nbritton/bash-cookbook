@@ -9,9 +9,9 @@ nic="$(route -n | awk '/^0\.0\.0\.0/ {print $8}')";
 ipaddress="$(ip -4 address show ${nic} | awk '/brd/ && !/\/32/ sub("\\/[[:digit:]]{1,2}","") {print $2}')";
 
 # Generate list of ports in a listening state.
-ports-list="$(ss -l4n | awk '{print $5}' | awk -F: '{print $2}' | sort -u)";
+portslist="$(ss -l4n | awk '{print $5}' | awk -F: '{print $2}' | sort -u)";
 
 # Query each listening port, and extract TLS cipher.
-echo ${ports-list} | while read port; do
+echo ${portslist} | while read port; do
     printf "Testing port ${port}: "; curl --max-time 2 -s -v https://${ipaddress}:${port}/ 2>&1 | grep "connection using"; echo;
 done | grep "*";
