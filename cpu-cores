@@ -4,10 +4,11 @@
 
 # The following will return the real core count of a system, as a single integer value, I have
 # confirmed it works on a 4-way E7-8895 v2 and 2-way E5-2640 v3 system with hyper-threading enabled.
-# It will round to the nearest integer, so that if you have some kind of quirky archtecture with
-# a heterogeneous configuration it will still return a useful value that can be used in scripts.
 
 awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}} END {printf "%.0f\n",count/(siblings/cores)}' /proc/cpuinfo;
+
+# It will round to the nearest integer, so that if you have some kind of quirky archtecture with
+# a heterogeneous configuration it will still return a useful value that can be used in scripts.
 
 # Example:
 # nbritton@lab01:~$ cores=$(awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}} END {printf "%.0f\n",count/(siblings/cores)}' /proc/cpuinfo)
