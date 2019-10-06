@@ -1,0 +1,11 @@
+# Surprisingly it is not very straightforward to query, in a scriptable way, how many cpu cores are present. While it is trivial find the total number of logical processors, it is a lot more difficult to ascertain if these are multi-threading frontends and get the true number of cpu cores...
+
+# This has been confirmed to work on a 4-way E7-8895 v2 system with hyper-threading enabled:
+awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}} END {print count/(siblings/cores)}' /proc/cpuinfo
+
+# Examples:
+# nbritton@lab01:~$ awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}} END {print count/(siblings/cores)}' /proc/cpuinfo
+# 60
+
+# nbritton@lab01:~$ awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}} END {print siblings" "cores" "count}' /proc/cpuinfo
+# 3600 1800 120
