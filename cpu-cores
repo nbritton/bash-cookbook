@@ -11,6 +11,9 @@ awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}
 # nbritton@lab01:~$ echo $cores;
 # 60
 
+# It will round to the nearest integer, so that if you have some kind of quirky archtecture with
+# a heterogeneous configuration it will still return a useful value that can be used in scripts.
+
 # Debug Example:
 # Column 1: Total sibling count
 # Column 2: Total cores count
@@ -18,6 +21,3 @@ awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}
 # Real_Cores = Column_3 / ( Column_1 / Column_2 )
 # nbritton@lab01:~$ awk '{if (/^siblings/) {siblings+=$3}}; {if (/^cpu cores/) {count+=1; cores+=$4}} END {print siblings" "cores" "count}' /proc/cpuinfo
 # 3600 1800 120
-
-# It will round to the nearest integer, so if you have some kind of quirky archtecture with a
-# heterogeneous and/or non-uniform configuration it will likely still return something useful.
