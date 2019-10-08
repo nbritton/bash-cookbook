@@ -2,40 +2,43 @@
 
 # this will display the numa topology for a machine:
 
-# yaml output
-for node in $(ls -d /sys/devices/system/node/node* | sed 's#/sys/devices/system/node/##g'); do
+case ${1} in
+    (yaml)
+        # yaml output
+        for node in $(ls -d /sys/devices/system/node/node* | sed 's#/sys/devices/system/node/##g'); do
 
-    printf "${node}: {";
-    for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
-        printf "core${core}: [";
-        grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7", "}' | sed -e 's/, $/], /';
-    done | sed 's/, $//';
-    echo "}";
+            printf "${node}: {";
+            for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
+                printf "core${core}: [";
+                grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7", "}' | sed -e 's/, $/], /';
+            done | sed 's/, $//';
+            echo "}";
+        done
+    ;;
+    (*)
+        # grep friendly output
+        for node in $(ls -d /sys/devices/system/node/node* | sed 's#/sys/devices/system/node/##g'); do
 
-done
-
-echo;
-
-# grep friendly output
-for node in $(ls -d /sys/devices/system/node/node* | sed 's#/sys/devices/system/node/##g'); do
-
-    for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
-        printf "${node} ";
-        printf "core${core} ";
-        grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
-        echo;
-    done
-
-done | column -t
+            for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
+                printf "${node} ";
+                printf "core${core} ";
+                grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
+                echo;
+            done
+        done | column -t
+    ;;
+    
+exit;
 
 # example:
 : <<'END'
-nbritton@lab01:~$ ./numainfo
+nbritton@lab01:~$ ./numainfo yaml
 node0: {core0: [cpu0, cpu60], core1: [cpu4, cpu64], core2: [cpu8, cpu68], core3: [cpu12, cpu72], core4: [cpu16, cpu76], core5: [cpu20, cpu80], core6: [cpu24, cpu84], core7: [cpu28, cpu88], core8: [cpu32, cpu92], core9: [cpu36, cpu96], core10: [cpu40, cpu100], core11: [cpu44, cpu104], core12: [cpu48, cpu108], core13: [cpu52, cpu112], core14: [cpu56, cpu116]}
 node1: {core0: [cpu1, cpu61], core1: [cpu5, cpu65], core2: [cpu9, cpu69], core3: [cpu13, cpu73], core4: [cpu17, cpu77], core5: [cpu21, cpu81], core6: [cpu25, cpu85], core7: [cpu29, cpu89], core8: [cpu33, cpu93], core9: [cpu37, cpu97], core10: [cpu41, cpu101], core11: [cpu45, cpu105], core12: [cpu49, cpu109], core13: [cpu53, cpu113], core14: [cpu57, cpu117]}
 node2: {core0: [cpu2, cpu62], core1: [cpu6, cpu66], core2: [cpu10, cpu70], core3: [cpu14, cpu74], core4: [cpu18, cpu78], core5: [cpu22, cpu82], core6: [cpu26, cpu86], core7: [cpu30, cpu90], core8: [cpu34, cpu94], core9: [cpu38, cpu98], core10: [cpu42, cpu102], core11: [cpu46, cpu106], core12: [cpu50, cpu110], core13: [cpu54, cpu114], core14: [cpu58, cpu118]}
 node3: {core0: [cpu3, cpu63], core1: [cpu7, cpu67], core2: [cpu11, cpu71], core3: [cpu15, cpu75], core4: [cpu19, cpu79], core5: [cpu23, cpu83], core6: [cpu27, cpu87], core7: [cpu31, cpu91], core8: [cpu35, cpu95], core9: [cpu39, cpu99], core10: [cpu43, cpu103], core11: [cpu47, cpu107], core12: [cpu51, cpu111], core13: [cpu55, cpu115], core14: [cpu59, cpu119]}
 
+nbritton@lab01:~$ ./numainfo
 node0  core0   cpu0   cpu60
 node0  core1   cpu4   cpu64
 node0  core2   cpu8   cpu68
