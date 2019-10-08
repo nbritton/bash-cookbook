@@ -36,7 +36,7 @@ case ${1} in
                 grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
                 echo;
             done
-        done | column -t
+        done
     ;;
 esac
     
