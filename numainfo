@@ -27,6 +27,7 @@ case ${1} in
             done
         done | column -t
     ;;
+esac
     
 exit;
 
