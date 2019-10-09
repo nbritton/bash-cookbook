@@ -18,7 +18,7 @@ getnumainfo() {
         for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
             printf "${node} ";
             printf "core${core} ";
-            grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
+            grep -r [0-9]$ /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
             echo;
         done
     done
@@ -32,7 +32,7 @@ case ${1} in
             printf "${node}: {";
             for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
                 printf "core${core}: [";
-                grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7", "}' | sed -e 's/, $/], /';
+                grep -r [0-9]$ /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7", "}' | sed -e 's/, $/], /';
             done | sed 's/, $//';
             echo "}";
         done
