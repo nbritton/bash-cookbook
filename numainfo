@@ -13,6 +13,17 @@
 # and easy for tools such as grep and awk to use. Alternatively, ./numainfo -y
 # will produce yaml output.
 
+getnumainfo() {
+    for node in $(ls -d /sys/devices/system/node/node* | sed 's#/sys/devices/system/node/##g'); do
+        for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
+            printf "${node} ";
+            printf "core${core} ";
+            grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
+            echo;
+        done
+    done
+}
+        
 case ${1} in
     (--yaml|-y)
         # YAML output
@@ -26,20 +37,19 @@ case ${1} in
             echo "}";
         done
     ;;
+    (--domain|-d)
+        # Show numa topology for a virsh domain.
+        cpulist=$(virsh vcpuinfo $2 | awk '/^CPU:/ {print $2}' | sort -n | paste -sd"|");
+        echo "domain: ${2}";
+        echo "cpus: $cpulist";
+        getnumainfo | egrep --color=always "cpu(${cpulist}) ";
+    ;;
     (*)
         # Human readable output that is awk & grep friendly.
-        for node in $(ls -d /sys/devices/system/node/node* | sed 's#/sys/devices/system/node/##g'); do
-
-            for core in $(cat /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -un); do
-                printf "${node} ";
-                printf "core${core} ";
-                grep -r [0-9]* /sys/devices/system/node/${node}/cpu[0-9]*/topology/core_id | sort -uV | awk -F/ -v core=":${core}$" 'match($9,core) {printf $7" "}';
-                echo;
-            done
-        done
+        getnumainfo;
     ;;
 esac
-    
+
 exit;
 
 # example:
