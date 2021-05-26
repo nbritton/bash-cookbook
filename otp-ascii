@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Name: otp-ascii, Version: 1
+# Discription: One-time Pad ASCII Printable Characters.
+# Author: Nikolas Britton
+#     E-mail: ytvzwld.mcteezy@rxltw.nzx (caesar, 11)
+# Copyright 2021 Nikolas Britton, Apache 2.0 License
+# Notes: Imagemagick is a dependency.
+
+timestamp=$(date +%s);
+
+function otp () {
+echo;
+echo "Epoch: ${timestamp}";
+
+printf '101';
+for ((index_a1=33;index_a1<127;index_a1++)) do
+    printf "\\$(printf %03o "${index_a1}")";
+done;
+echo;
+
+printf '010';
+for ((index_a2=126;index_a2>32;index_a2--)) do
+    printf "\\$(printf %03o "${index_a2}")";
+done;
+echo;
+
+printf '1';
+printf '01%.0s' {1..48};
+echo;
+
+for ((index_b1=33,index_b2=126,switch=0;index_b1<127;index_b1++,index_b2--)) do
+	printf "\\$(printf %03o "${index_b1}")";
+	printf "\\$(printf %03o "${index_b2}")";
+	if [[ ${switch} -eq 0 ]]; then
+		printf '0';
+		switch=1;
+    else
+		printf '1';
+		switch=0;
+	fi
+    LC_CTYPE=C < /dev/urandom tr -cd [:graph:] | tr -d '\n' | fold -w 94 | head -n 1;
+done;
+echo;
+}
+otp | sed -e 's/\(.\)/\1 /g' > otp-${timestamp}.txt;
+convert -density 600 -units pixelsperinch -size 10000x10000 xc:white -font "Monaco" -pointsize 8 -fill black -annotate +15+15 "@otp-${timestamp}.txt" -trim +repage otp-${timestamp}.png;
+rm otp-${timestamp}.txt;
