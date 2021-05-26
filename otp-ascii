@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Name: otp-ascii, Version: 1.1
+# Name: otp-ascii, Version: 1.2
 # Discription: One-time Pad ASCII Printable Characters.
 # Author: Nikolas Britton
 #     E-mail: ytvzwld.mcteezy@rxltw.nzx (caesar, 11)
@@ -16,7 +16,6 @@ timestamp=$(date +%s);
 
 function otp-ascii () {
     echo;
-    echo "Epoch: ${timestamp}";
 
     printf '101';
     for ((index_a1=33;index_a1<127;index_a1++)) do
