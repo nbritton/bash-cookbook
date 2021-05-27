@@ -1,6 +1,6 @@
 #!/bin/bash
 
-# Name: otp-ascii, Version: 1.2
+# Name: otp-ascii, Version: 1.3
 # Discription: One-time Pad ASCII Printable Characters.
 # Author: Nikolas Britton
 #     E-mail: ytvzwld.mcteezy@rxltw.nzx (caesar, 11)
@@ -14,46 +14,48 @@ test -x /usr/local/bin/convert || {
 
 timestamp=$(date +%s);
 
-function otp-ascii () {
-    echo;
-
-    printf '101';
+function horizontal-legend () {
+    printf 'ab#';
     for ((index_a1=33;index_a1<127;index_a1++)) do
         printf "\\$(printf %03o "${index_a1}")";
     done;
     echo;
 
-    printf '010';
+    printf 'cd#';
     for ((index_a2=126;index_a2>32;index_a2--)) do
         printf "\\$(printf %03o "${index_a2}")";
     done;
     echo;
+}
 
-    printf '1';
-    printf '01%.0s' {1..48};
+function otp-ascii () {
+    horizontal-legend;
+
+    printf '#%.0s' {1..97};
     echo;
 
     for ((index_b1=33,index_b2=126,switch=0;index_b1<127;index_b1++,index_b2--)) do
  	printf "\\$(printf %03o "${index_b1}")";
 	printf "\\$(printf %03o "${index_b2}")";
-	if [[ ${switch} -eq 0 ]]; then
-		printf '0';
-		switch=1;
-        else
-		printf '1';
-		switch=0;
-	fi
+        printf '#';
         LC_CTYPE=C < /dev/urandom tr -cd [:graph:] | tr -d '\n' | fold -w 94 | head -n 1;
     done;
-    echo;
 }
 
-otp-ascii | sed -e 's/\(.\)/\1 /g' > otp-ascii-${timestamp}.txt;
+echo > otp-ascii-${timestamp}.txt;
 
-LC_CTYPE=C < /dev/urandom tr -cd [:graph:] | tr -d '\n' | fold -w 94 | head -n 1 >> otp-ascii-${timestamp}.txt;
+for k in $(seq -w 0 20); do
+    printf "KEY$k " >> otp-ascii-${timestamp}.txt;
+    LC_CTYPE=C < /dev/urandom tr -cd [:graph:] | tr -d '\n' | fold -w 94 | head -n 1 | sed -e 's/\(.\)/\1 /g' >> otp-ascii-${timestamp}.txt;
+done;
 
-shasum otp-ascii-${timestamp}.txt >> otp-ascii-${timestamp}.txt;
+printf "SHA01 " >> otp-ascii-${timestamp}.txt;
+shasum -a 512256 otp-ascii-${timestamp}.txt >> otp-ascii-${timestamp}.txt;
 
-convert -density 600 -units pixelsperinch -size 10000x10000 xc:white -font "Monaco" -pointsize 8 -fill black -annotate +15+15 "@otp-ascii-${timestamp}.txt" -trim +repage otp-ascii-${timestamp}.png;
+otp-ascii | sed -e 's/\(.\)/\1 /g' >> otp-ascii-${timestamp}.txt;
+printf "SHA02 " >> otp-ascii-${timestamp}.txt;
+shasum -a 512256 otp-ascii-${timestamp}.txt >> otp-ascii-${timestamp}.txt;
 
-rm otp-ascii-${timestamp}.txt;
+convert -density 600 -units pixelsperinch -size 12000x12000 xc:white -font "Monaco" -pointsize 8 -fill black -annotate +15+15 "@otp-ascii-${timestamp}.txt" -trim +repage otp-ascii-${timestamp}.png;
+
+#rm otp-ascii-${timestamp}.txt;
