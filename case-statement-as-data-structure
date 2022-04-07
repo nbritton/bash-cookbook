@@ -1,0 +1,31 @@
+#!/bin/bash
+
+shopt -s nocasematch
+
+case $2 in
+    "ABC Co., LLC" | "ABC Co LLC" | "12-3456789")
+        if [[ $1 == name ]]; then
+            printf "ABC Company, L.L.C.";
+        fi
+        if [[ $1 == ein ]]; then
+            printf "12-3456789";
+        fi
+    ;;
+
+    "XYZ, INC" | "XYZ, INC." | "XYZ INC" | "98-7654321")
+        if [[ $1 == name ]]; then
+            printf "XYZ Incorprated";
+        fi
+        if [[ $1 == ein ]]; then
+            printf "98-7654321";
+        fi
+    ;;
+
+    *)
+        printf "$1 is not defined and/or did not match."
+        exit 1;
+    ;;
+esac
+
+printf "\n";
+exit 0;
