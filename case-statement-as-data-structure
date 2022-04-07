@@ -22,7 +22,7 @@ case $2 in
     ;;
 
     *)
-        printf "$1 is not defined and/or did not match."
+        printf "$2 is not defined and/or did not match."
         exit 1;
     ;;
 esac
